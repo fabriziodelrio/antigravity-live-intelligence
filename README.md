@@ -1,6 +1,8 @@
 [English](README.md) | [Italiano](README.it.md)
 # Antigravity Live Intelligence
 
+![Dashboard preview (demo data)](docs/screenshot.jpg)
+
 Local real-time dashboard to monitor Google Antigravity usage: sessions, input/output/cache tokens, tools called, and models used.
 
 ## Features

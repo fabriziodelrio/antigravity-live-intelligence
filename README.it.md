@@ -2,6 +2,8 @@
 
 # Antigravity Live Intelligence
 
+![Anteprima dashboard (dati demo)](docs/screenshot.jpg)
+
 Dashboard locale in tempo reale per monitorare l'uso di Google Antigravity: sessioni, token in input/output/cache, tool chiamati e modelli usati.
 
 ## Funzionalità
