@@ -318,6 +318,7 @@ INDEX_HTML = """<!DOCTYPE html>
       <span id="liveBadge" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> <span id="liveStatusText">LIVE ATTIVO</span>
       </span>
+      <button id="langBtn" onclick="toggleLang()" title="Language / Lingua" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-darkborder rounded-lg text-xs font-bold transition">IT | EN</button>
       <button onclick="fetchData()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition shadow-lg shadow-indigo-600/30 flex items-center gap-2">
         <svg id="refreshIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
         Aggiorna Ora
@@ -505,6 +506,89 @@ INDEX_HTML = """<!DOCTYPE html>
   </div>
 
   <script>
+    const EN = {
+      "Monitoraggio live del Brain locale • Aggiornamento automatico ogni 3 secondi": "Live monitoring of the local Brain • Auto-refresh every 3 seconds",
+      "LIVE ATTIVO": "LIVE",
+      "Aggiorna Ora": "Refresh Now",
+      "Sessioni Totali": "Total Sessions",
+      "risparmiati da cache": "saved by cache",
+      "Progetti Attivi": "Active Projects",
+      "workspace rilevati": "workspaces detected",
+      "Contatore da Reset": "Counter Since Reset",
+      "Reset Ora": "Reset Now",
+      "Consumo Oggi": "Usage Today",
+      "Ultimi 7 Giorni": "Last 7 Days",
+      "Sessioni & Consumi Live": "Live Sessions & Usage",
+      "Vista predefinita su Oggi • Filtra per periodo, stato o cerca per titolo/progetto": "Default view: Today • Filter by period, status or search by title/project",
+      "Oggi (": "Today (",
+      "Attive (": "Active (",
+      "Tutte (": "All (",
+      "Archivio (": "Archive (",
+      "Stato": "Status",
+      "Data/Ora": "Date/Time",
+      "Titolo Sessione": "Session Title",
+      "Progetto": "Project",
+      "Modello": "Model",
+      "Consumi Token per Periodo": "Token Usage by Period",
+      "Aggregazione Input, Output, Cache Read e sessioni nel tempo": "Input, Output, Cache Read and sessions over time",
+      "Giorni": "Days",
+      "Settimane": "Weeks",
+      "Mesi": "Months",
+      "Periodo": "Period",
+      "Sessioni": "Sessions",
+      "Sessioni per Progetto": "Sessions by Project",
+      "Tutti i workspace": "All workspaces",
+      "Modelli AI (Sessioni Recenti & Telemetria Attiva)": "AI Models (Recent Sessions & Live Telemetry)",
+      "100% Modelli Reali": "100% Real Models",
+      "Ripartizione precisa dei modelli rilevati nei prompt vivi di Antigravity:": "Exact breakdown of models detected in live Antigravity prompts:",
+      "Cerca titolo, progetto...": "Search title, project...",
+      "Dal": "Since",
+      "attive": "active",
+      "arch.": "arch.",
+      "step totali": "total steps",
+      "token inviati": "tokens sent",
+      "generati": "generated",
+      "sess.": "sess.",
+      "storico": "history",
+      "vive": "live",
+      "sessioni": "sessions",
+      "VIVA": "LIVE",
+      "ARCH.": "ARCH.",
+      "Compattata": "Compacted",
+      "Nessun dato nel periodo": "No data for this period",
+      "Nessuna sessione trovata per questo filtro": "No sessions found for this filter",
+      "Sessioni storiche compattate da Antigravity:": "Historical sessions compacted by Antigravity:"
+    };
+    let lang = localStorage.getItem("agy_lang") || ((navigator.language || "en").toLowerCase().startsWith("it") ? "it" : "en");
+    const t = s => (lang === "en" && EN[s]) || s;
+
+    function applyLang() {
+      document.documentElement.lang = lang;
+      document.getElementById("langBtn").innerHTML = lang === "it" ? "<b>IT</b> | EN" : "IT | <b>EN</b>";
+      const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      let n;
+      while ((n = w.nextNode())) {
+        if (n.parentElement.closest("script,#langBtn")) continue;
+        if (n.__it === undefined) {
+          const k = n.nodeValue.trim();
+          if (!EN[k]) continue;
+          n.__it = k;
+        }
+        const v = n.nodeValue;
+        const lead = v.slice(0, v.length - v.trimStart().length), trail = v.slice(v.trimEnd().length);
+        n.nodeValue = lead + t(n.__it) + trail;
+      }
+      const si = document.getElementById("searchInput");
+      si.placeholder = t("Cerca titolo, progetto...");
+    }
+
+    function toggleLang() {
+      lang = lang === "it" ? "en" : "it";
+      localStorage.setItem("agy_lang", lang);
+      applyLang();
+      fetchData();
+    }
+
     let currentFilter = 'today';
     let currentPeriod = 'daily';
     let allSessions = [];
@@ -568,7 +652,7 @@ INDEX_HTML = """<!DOCTYPE html>
       const dTools = Math.max(0, (latestTotals.tool_calls || 0) - base.tools);
       const sinceStr = new Date(base.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      document.getElementById("winDeltaMeta").textContent = `Dal ${sinceStr} • +${formatNumber(dTools)} tools`;
+      document.getElementById("winDeltaMeta").textContent = `${t('Dal')} ${sinceStr} • +${formatNumber(dTools)} tools`;
       document.getElementById("winDeltaInOut").textContent = `+${formatTokens(dIn)} in / +${formatTokens(dOut)} out`;
       document.getElementById("winDeltaCache").textContent = `+cache ${formatTokens(dCache)}`;
 
@@ -628,7 +712,7 @@ INDEX_HTML = """<!DOCTYPE html>
         html += `
           <tr class="hover:bg-slate-800/40 transition">
             <td class="py-2.5 px-4 font-mono font-semibold text-slate-200 whitespace-nowrap">${label}</td>
-            <td class="py-2.5 px-3 text-right font-mono text-slate-300">${stat.count} <span class="text-emerald-400 text-[10px]">(${stat.active} vive)</span></td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-300">${stat.count} <span class="text-emerald-400 text-[10px]">(${stat.active} ${t('vive')})</span></td>
             <td class="py-2.5 px-3 text-right font-mono text-slate-400">${formatNumber(stat.steps)}</td>
             <td class="py-2.5 px-3 text-right font-mono text-indigo-400">${formatNumber(stat.tools)}</td>
             <td class="py-2.5 px-3 text-right font-mono text-blue-400">${formatTokens(stat.in)}</td>
@@ -642,7 +726,7 @@ INDEX_HTML = """<!DOCTYPE html>
           </tr>
         `;
       });
-      tbody.innerHTML = html || '<tr><td colspan="8" class="py-6 text-center text-slate-500">Nessun dato nel periodo</td></tr>';
+      tbody.innerHTML = html || '<tr><td colspan="8" class="py-6 text-center text-slate-500">' + t('Nessun dato nel periodo') + '</td></tr>';
     }
 
     function renderTable() {
@@ -668,11 +752,11 @@ INDEX_HTML = """<!DOCTYPE html>
 
           let badgeHtml, modelHtml;
           if (s.is_active) {
-            badgeHtml = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">VIVA</span>';
+            badgeHtml = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">' + t('VIVA') + '</span>';
             modelHtml = `<span class="font-medium text-purple-400 block max-w-[200px] truncate" title="${s.model}">${s.model}</span>`;
           } else {
-            badgeHtml = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-400 border border-slate-700">ARCH.</span>';
-            modelHtml = '<span class="text-slate-500 italic whitespace-nowrap">Compattata</span>';
+            badgeHtml = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-400 border border-slate-700">' + t('ARCH.') + '</span>';
+            modelHtml = '<span class="text-slate-500 italic whitespace-nowrap">' + t('Compattata') + '</span>';
           }
 
           html += `
@@ -691,7 +775,7 @@ INDEX_HTML = """<!DOCTYPE html>
           `;
         }
       });
-      tbody.innerHTML = html || '<tr><td colspan="10" class="py-6 text-center text-slate-500">Nessuna sessione trovata per questo filtro</td></tr>';
+      tbody.innerHTML = html || '<tr><td colspan="10" class="py-6 text-center text-slate-500">' + t('Nessuna sessione trovata per questo filtro') + '</td></tr>';
     }
 
     async function fetchData() {
@@ -711,13 +795,13 @@ INDEX_HTML = """<!DOCTYPE html>
 
         // KPI
         document.getElementById("kpiSessions").textContent = totals.sessions;
-        document.getElementById("kpiSessionsSub").textContent = `${totals.active_sessions} attive • ${totals.archived_sessions} arch.`;
+        document.getElementById("kpiSessionsSub").textContent = `${totals.active_sessions} ${t('attive')} • ${totals.archived_sessions} ${t('arch.')}`;
         document.getElementById("kpiToolCalls").textContent = formatNumber(totals.tool_calls);
-        document.getElementById("kpiToolCallsSub").textContent = `${formatNumber(totals.steps)} step totali`;
+        document.getElementById("kpiToolCallsSub").textContent = `${formatNumber(totals.steps)} ${t('step totali')}`;
         document.getElementById("kpiInTokens").textContent = formatTokens(totals.in_tokens);
-        document.getElementById("kpiInTokensSub").textContent = `${formatNumber(totals.in_tokens)} token inviati`;
+        document.getElementById("kpiInTokensSub").textContent = `${formatNumber(totals.in_tokens)} ${t('token inviati')}`;
         document.getElementById("kpiOutTokens").textContent = formatTokens(totals.out_tokens);
-        document.getElementById("kpiOutTokensSub").textContent = `${formatNumber(totals.out_tokens)} generati`;
+        document.getElementById("kpiOutTokensSub").textContent = `${formatNumber(totals.out_tokens)} ${t('generati')}`;
         document.getElementById("kpiCacheTokens").textContent = formatTokens(totals.cache_tokens);
         document.getElementById("kpiProjects").textContent = totals.unique_projects;
 
@@ -725,7 +809,7 @@ INDEX_HTML = """<!DOCTYPE html>
         const w = totals.windows || {};
         const renderWin = (prefix, obj) => {
           const o = obj || { count: 0, tools: 0, in: 0, out: 0, cache: 0 };
-          document.getElementById(prefix + "Meta").textContent = `${o.count} sess. • ${formatNumber(o.tools)} tools`;
+          document.getElementById(prefix + "Meta").textContent = `${o.count} ${t('sess.')} • ${formatNumber(o.tools)} tools`;
           document.getElementById(prefix + "InOut").textContent = `${formatTokens(o.in)} in / ${formatTokens(o.out)} out`;
           document.getElementById(prefix + "Cache").textContent = `cache ${formatTokens(o.cache)}`;
         };
@@ -745,12 +829,12 @@ INDEX_HTML = """<!DOCTYPE html>
         const maxProjCount = projSorted.length > 0 ? projSorted[0][1].count : 1;
         projSorted.forEach(([pName, pStat]) => {
           const pct = ((pStat.count / maxProjCount) * 100).toFixed(1);
-          const inFmt = pStat.in > 0 ? `${formatTokens(pStat.in)} in-tok` : 'storico';
+          const inFmt = pStat.in > 0 ? `${formatTokens(pStat.in)} in-tok` : t('storico');
           projHtml += `
             <div>
               <div class="flex justify-between text-xs mb-1">
                 <span class="font-medium text-slate-300">${pName}</span>
-                <span class="text-slate-400">${pStat.count} sess. • ${inFmt}</span>
+                <span class="text-slate-400">${pStat.count} ${t('sess.')} • ${inFmt}</span>
               </div>
               <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
                 <div class="bg-indigo-500 h-1.5 rounded-full" style="width: ${pct}%"></div>
@@ -770,7 +854,7 @@ INDEX_HTML = """<!DOCTYPE html>
             <div>
               <div class="flex justify-between text-xs mb-1">
                 <span class="font-medium text-purple-300">${mName}</span>
-                <span class="text-slate-400">${mStat.count} sessioni (${share}%)</span>
+                <span class="text-slate-400">${mStat.count} ${t('sessioni')} (${share}%)</span>
               </div>
               <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
                 <div class="bg-purple-500 h-1.5 rounded-full" style="width: ${share}%"></div>
@@ -780,8 +864,8 @@ INDEX_HTML = """<!DOCTYPE html>
         });
         document.getElementById("modelsList").innerHTML = modHtml;
         document.getElementById("archivedNote").innerHTML = `
-          <span>📦 Sessioni storiche compattate da Antigravity:</span>
-          <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 font-mono">${totals.archived_sessions} sessioni</span>
+          <span>📦 ${t('Sessioni storiche compattate da Antigravity:')}</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 font-mono">${totals.archived_sessions} ${t('sessioni')}</span>
         `;
 
         renderTable();
@@ -795,6 +879,7 @@ INDEX_HTML = """<!DOCTYPE html>
     }
 
     // Polling automatico ogni 3 secondi
+    applyLang();
     fetchData();
     setInterval(fetchData, 3000);
   </script>
