@@ -1,4 +1,4 @@
-﻿[English](README.md) | [Italiano](README.it.md)
+[English](README.md) | [Italiano](README.it.md)
 
 # Antigravity Live Intelligence
 

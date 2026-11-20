@@ -1,4 +1,4 @@
-﻿"""Fake sessions for `--demo` mode (screenshots, trying the dashboard without real logs)."""
+"""Fake sessions for `--demo` mode (screenshots, trying the dashboard without real logs)."""
 import random
 import datetime
 

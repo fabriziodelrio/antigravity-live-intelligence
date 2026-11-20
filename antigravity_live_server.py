@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Antigravity Live Server & Telemetry Dashboard
 Avvia un server HTTP locale leggero con API JSON in tempo reale.
@@ -96,6 +96,7 @@ def collect_data(limit=250):
     else:
         if not os.path.exists(DB_PATH):
             return [], {}
+
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute("""
@@ -308,7 +309,7 @@ INDEX_HTML = """<!DOCTYPE html>
   <div class="flex flex-col md:flex-row justify-between items-start md:items-center pb-6 border-b border-darkborder mb-8 gap-4">
     <div>
       <div class="flex items-center gap-3">
-        <span class="text-3xl">âš¡</span>
+        <span class="text-3xl">⚡</span>
         <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Antigravity Live Intelligence</h1>
       </div>
       <p class="text-slate-400 text-sm mt-1">Monitoraggio live del Brain locale &bull; Aggiornamento automatico ogni 3 secondi</p>
@@ -403,7 +404,7 @@ INDEX_HTML = """<!DOCTYPE html>
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4">
       <div>
         <h2 class="text-lg font-semibold text-slate-200 flex items-center gap-2">
-          <span>ðŸ“‹</span> Sessioni & Consumi Live
+          <span>📋</span> Sessioni & Consumi Live
         </h2>
         <p class="text-xs text-slate-400 mt-0.5">Vista predefinita su Oggi &bull; Filtra per periodo, stato o cerca per titolo/progetto</p>
       </div>
@@ -447,7 +448,7 @@ INDEX_HTML = """<!DOCTYPE html>
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
       <div>
         <h2 class="text-base font-semibold text-slate-200 flex items-center gap-2">
-          <span>ðŸ“Š</span> Consumi Token per Periodo
+          <span>📊</span> Consumi Token per Periodo
         </h2>
         <p class="text-xs text-slate-400 mt-0.5">Aggregazione Input, Output, Cache Read e sessioni nel tempo</p>
       </div>
@@ -482,7 +483,7 @@ INDEX_HTML = """<!DOCTYPE html>
     <div class="bg-darkcard border border-darkborder rounded-xl p-5 glow">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-base font-semibold text-slate-200 flex items-center gap-2">
-          <span>ðŸ“</span> Sessioni per Progetto
+          <span>📁</span> Sessioni per Progetto
         </h2>
         <span class="text-xs text-slate-400">Tutti i workspace</span>
       </div>
@@ -493,7 +494,7 @@ INDEX_HTML = """<!DOCTYPE html>
     <div class="bg-darkcard border border-darkborder rounded-xl p-5 glow">
       <div class="flex justify-between items-center mb-2">
         <h2 class="text-base font-semibold text-slate-200 flex items-center gap-2">
-          <span>ðŸ§ </span> Modelli AI (Sessioni Recenti & Telemetria Attiva)
+          <span>🧠</span> Modelli AI (Sessioni Recenti & Telemetria Attiva)
         </h2>
         <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-950 text-purple-300 border border-purple-800">100% Modelli Reali</span>
       </div>
@@ -567,7 +568,7 @@ INDEX_HTML = """<!DOCTYPE html>
       const dTools = Math.max(0, (latestTotals.tool_calls || 0) - base.tools);
       const sinceStr = new Date(base.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      document.getElementById("winDeltaMeta").textContent = `Dal ${sinceStr} â€¢ +${formatNumber(dTools)} tools`;
+      document.getElementById("winDeltaMeta").textContent = `Dal ${sinceStr} • +${formatNumber(dTools)} tools`;
       document.getElementById("winDeltaInOut").textContent = `+${formatTokens(dIn)} in / +${formatTokens(dOut)} out`;
       document.getElementById("winDeltaCache").textContent = `+cache ${formatTokens(dCache)}`;
 
@@ -710,7 +711,7 @@ INDEX_HTML = """<!DOCTYPE html>
 
         // KPI
         document.getElementById("kpiSessions").textContent = totals.sessions;
-        document.getElementById("kpiSessionsSub").textContent = `${totals.active_sessions} attive â€¢ ${totals.archived_sessions} arch.`;
+        document.getElementById("kpiSessionsSub").textContent = `${totals.active_sessions} attive • ${totals.archived_sessions} arch.`;
         document.getElementById("kpiToolCalls").textContent = formatNumber(totals.tool_calls);
         document.getElementById("kpiToolCallsSub").textContent = `${formatNumber(totals.steps)} step totali`;
         document.getElementById("kpiInTokens").textContent = formatTokens(totals.in_tokens);
@@ -724,7 +725,7 @@ INDEX_HTML = """<!DOCTYPE html>
         const w = totals.windows || {};
         const renderWin = (prefix, obj) => {
           const o = obj || { count: 0, tools: 0, in: 0, out: 0, cache: 0 };
-          document.getElementById(prefix + "Meta").textContent = `${o.count} sess. â€¢ ${formatNumber(o.tools)} tools`;
+          document.getElementById(prefix + "Meta").textContent = `${o.count} sess. • ${formatNumber(o.tools)} tools`;
           document.getElementById(prefix + "InOut").textContent = `${formatTokens(o.in)} in / ${formatTokens(o.out)} out`;
           document.getElementById(prefix + "Cache").textContent = `cache ${formatTokens(o.cache)}`;
         };
@@ -749,7 +750,7 @@ INDEX_HTML = """<!DOCTYPE html>
             <div>
               <div class="flex justify-between text-xs mb-1">
                 <span class="font-medium text-slate-300">${pName}</span>
-                <span class="text-slate-400">${pStat.count} sess. â€¢ ${inFmt}</span>
+                <span class="text-slate-400">${pStat.count} sess. • ${inFmt}</span>
               </div>
               <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
                 <div class="bg-indigo-500 h-1.5 rounded-full" style="width: ${pct}%"></div>
@@ -779,7 +780,7 @@ INDEX_HTML = """<!DOCTYPE html>
         });
         document.getElementById("modelsList").innerHTML = modHtml;
         document.getElementById("archivedNote").innerHTML = `
-          <span>ðŸ“¦ Sessioni storiche compattate da Antigravity:</span>
+          <span>📦 Sessioni storiche compattate da Antigravity:</span>
           <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 font-mono">${totals.archived_sessions} sessioni</span>
         `;
 
@@ -835,8 +836,8 @@ def main():
     with server as httpd:
         url = f"http://localhost:{PORT}"
         if sys.stdout is not None:
-            print(f"ðŸš€ Antigravity Live Server attivo su: {url}")
-            print("âš¡ Polling automatico attivo ogni 3 secondi.")
+            print(f"🚀 Antigravity Live Server attivo su: {url}")
+            print("⚡ Polling automatico attivo ogni 3 secondi.")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
@@ -845,6 +846,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
